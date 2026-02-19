@@ -10,22 +10,21 @@ from app.profiles.service import ProfilesService
 
 
 class StubProfilesRepository:
-    def list_profiles(self, limit: int = 50):
-        assert limit == 50
+    def list_profiles(self):
         return [
             {
-                "id": uuid4(),
+                "id": str(uuid4()),
                 "email": "existing@example.com",
                 "display_name": "Existing User",
                 "created_at": datetime.now(UTC),
             }
         ]
 
-    def create_profile(self, payload: ProfileCreate):
+    def create_profile(self, email: str | None, display_name: str | None):
         return {
-            "id": uuid4(),
-            "email": payload.email,
-            "display_name": payload.display_name,
+            "id": str(uuid4()),
+            "email": email,
+            "display_name": display_name,
             "created_at": datetime.now(UTC),
         }
 
@@ -60,9 +59,9 @@ def test_profiles_service_create_profile() -> None:
     assert isinstance(result, ProfileRead)
 
 
-def test_openapi_has_post_profiles_request_body_schema() -> None:
+def test_openapi_has_patch_profile_me_request_body_schema() -> None:
     openapi = app.openapi()
-    profile_post = openapi["paths"]["/profiles/"]["post"]
+    profile_patch = openapi["paths"]["/profiles/me"]["patch"]
 
-    assert "requestBody" in profile_post
-    assert profile_post["requestBody"]["required"] is True
+    assert "requestBody" in profile_patch
+    assert profile_patch["requestBody"]["required"] is True
