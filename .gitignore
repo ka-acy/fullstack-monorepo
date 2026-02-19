@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+*.log
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+
+# Supabase local runtime
+.supabase/
+
+# OS
+.DS_Store
