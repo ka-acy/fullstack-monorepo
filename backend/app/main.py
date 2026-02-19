@@ -1,8 +1,17 @@
 from fastapi import FastAPI
 from app.db import db_ok
-from app.routes_profiles import router as profiles_router
-
+from app.profiles.router import router as profiles_router
+from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="Backend API")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(profiles_router)
 
