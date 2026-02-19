@@ -1,9 +1,22 @@
+from fastapi import Depends
 from fastapi import FastAPI
-from app.db import db_ok
-from app.profiles.router import router as profiles_router
 from fastapi.middleware.cors import CORSMiddleware
-app = FastAPI(title="Backend API")
 
+from app.db import db_ok
+from app.deps import get_current_user
+from app.profiles.router import router as profiles_router
+
+
+app = FastAPI(title="Backend API")
+app.include_router(profiles_router)
+
+@app.get("/protected")
+def protected(user=Depends(get_current_user)):
+    return {
+        "ok": True,
+        "user_id": user.get("sub"),
+        "email": user.get("email"),
+    }
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,8 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(profiles_router)
 
 @app.get("/")
 def root():

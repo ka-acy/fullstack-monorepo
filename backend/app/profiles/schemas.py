@@ -1,44 +1,30 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Annotated
-from uuid import UUID
+from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
-
-EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
-
-EmailStrBasic = Annotated[
-    str,
-    StringConstraints(
-        strip_whitespace=True,
-        min_length=3,
-        max_length=320,
-        pattern=EMAIL_PATTERN,
-    ),
-]
-
-DisplayNameStr = Annotated[
-    str,
-    StringConstraints(
-        strip_whitespace=True,
-        min_length=1,
-        max_length=100,
-    ),
-]
+from pydantic import BaseModel, EmailStr
 
 
-class ProfileCreate(BaseModel):
-    email: EmailStrBasic
-    display_name: DisplayNameStr | None = None
+class ProfileBase(BaseModel):
+    email: Optional[EmailStr] = None
+    display_name: Optional[str] = None
 
 
-class ProfileRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class ProfileCreate(ProfileBase):
+    # If you are using the auth trigger, you may not need create at all,
+    # but we keep it to satisfy existing router imports.
+    pass
 
-    id: UUID
-    email: str | None
-    display_name: str | None
+
+class ProfileUpdate(BaseModel):
+    display_name: Optional[str] = None
+
+
+class ProfileRead(ProfileBase):
+    id: str
     created_at: datetime
 
 
 class ProfileListResponse(BaseModel):
-    items: list[ProfileRead] = Field(default_factory=list)
+    items: list[ProfileRead]
